@@ -18,8 +18,8 @@
  * '04 Dec 1995 00:12:00 UTC' => 818035920000
  */
 
-function dateToTimestamp(/* date */) {
-  throw new Error('Not implemented');
+function dateToTimestamp(date) {
+  return Date.parse(date);
 }
 
 /**
@@ -32,8 +32,12 @@ function dateToTimestamp(/* date */) {
  * Date(2023, 5, 1, 8, 20, 55) => '08:20:55'
  * Date(2015, 10, 20, 23, 15, 1) => '23:15:01'
  */
-function getTime(/* date */) {
-  throw new Error('Not implemented');
+function getTime(date) {
+  let result = '';
+  result += (date.getHours() < 10 ? '0' : '') + date.getHours();
+  result += (date.getMinutes() < 10 ? ':0' : ':') + date.getMinutes();
+  result += (date.getSeconds() < 10 ? ':0' : ':') + date.getSeconds();
+  return result;
 }
 
 /**
@@ -47,8 +51,18 @@ function getTime(/* date */) {
  * '03 Dec 1995 00:12:00 UTC' => 'Sunday'
  * '2024-01-30T00:00:00.000Z' => 'Tuesday'
  */
-function getDayName(/* date */) {
-  throw new Error('Not implemented');
+function getDayName(date) {
+  const weekDays = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
+  const dateCopy = new Date(date);
+  return weekDays[dateCopy.getUTCDay()];
 }
 
 /**
@@ -62,8 +76,15 @@ function getDayName(/* date */) {
  * Date('2024-02-13T00:00:00Z') => Date('2024-02-16T00:00:00Z')
  * Date('2024-02-16T00:00:00Z') => Date('2024-02-23T00:00:00Z')
  */
-function getNextFriday(/* date */) {
-  throw new Error('Not implemented');
+function getNextFriday(date) {
+  const dateCopy = new Date(date);
+
+  let daysTillNextFriday = 5 - dateCopy.getUTCDay();
+  if (daysTillNextFriday === -1) daysTillNextFriday = 6;
+  if (daysTillNextFriday === 0) daysTillNextFriday = 7;
+
+  dateCopy.setUTCDate((dateCopy.getUTCDate() + daysTillNextFriday) % 31);
+  return dateCopy;
 }
 
 /**
@@ -77,8 +98,27 @@ function getNextFriday(/* date */) {
  * 1, 2024 => 31
  * 2, 2024 => 29
  */
-function getCountDaysInMonth(/* month, year */) {
-  throw new Error('Not implemented');
+function isLeap(year) {
+  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+}
+
+function getCountDaysInMonth(month, year) {
+  const daysInMonths = {
+    28: [2],
+    30: [4, 6, 9, 11],
+    31: [1, 3, 5, 7, 8, 10, 12],
+  };
+  let result;
+
+  Object.keys(daysInMonths).forEach((key) => {
+    if (daysInMonths[key].includes(month)) {
+      result = key;
+    }
+  });
+
+  if (result === '28' && isLeap(year)) result = '29';
+
+  return result;
 }
 
 /**
